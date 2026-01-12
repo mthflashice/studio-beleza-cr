@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio de Beleza CR - Agendamento</title>
+    <!-- Importando fonte moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Biblioteca de Ícones (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* --- CSS Reset e Variáveis --- */
+        :root {
+            --primary-pink: #ec4899;
+            --primary-purple: #9333ea;
+            --bg-gradient: linear-gradient(135deg, #fdf2f8 0%, #ffffff 50%, #faf5ff 100%);
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --white: #ffffff;
+            --border-gray: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* --- Header --- */
+        header {
+            background: linear-gradient(to right, #ec4899, #9333ea);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .brand p {
+            color: #fce7f3; /* pink-100 */
+            font-size: 0.875rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Progress Bar --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 2;
+            background: transparent;
+            width: 100%;
+        }
+
+        .circle {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            background: #e5e7eb; /* gray-200 */
+            color: #9ca3af; /* gray-500 */
+            transition: all 0.3s;
+        }
+
+        .step-indicator.active .circle {
+            background: var(--primary-pink);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #9ca3af;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .step-label { display: block; }
+        }
+
+        .step-indicator.active .step-label {
+            color: var(--text-dark);
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 1.25rem;
+            left: 0;
+            right: 0;
+            height: 0.25rem;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-pink);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* --- Content Areas --- */
+        .step-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* --- Grids --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .grid-4 { grid-template-columns: repeat(4, 1fr); }
+            .grid-6 { grid-template-columns: repeat(6, 1fr); }
+            .grid-7 { grid-template-columns: repeat(7, 1fr); }
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .grid-6, .grid-7 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Mobile default */
+            gap: 0.75rem;
+        }
+
+        /* --- Cards --- */
+        .card-selectable {
+            background: white;
+            border: 2px solid var(--border-gray);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .card-selectable:hover {
+            border-color: #f9a8d4; /* pink-300 */
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-selectable.selected {
+            border-color: var(--primary-pink);
+            background: #fdf2f8; /* pink-50 */
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .service-price {
+            color: var(--primary-pink);
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .duration-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            margin-top: 0.25rem;
+        }
+
+        /* Date & Time Cards */
+        .date-card {
+            text-align: center;
+            padding: 1rem;
+        }
+        .date-card .weekday { font-size: 0.75rem; color: var(--text-gray); }
+        .date-card .day { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin: 0.25rem 0; }
+        .date-card .month { font-size: 0.75rem; color: #9ca3af; }
+
+        .time-card {
+            text-align: center;
+            padding: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* --- Form --- */
+        .form-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-pink);
+        }
+
+        /* --- Summary --- */
+        .summary-box {
+            background: linear-gradient(to right, #fdf2f8, #faf5ff);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        /* --- Buttons --- */
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-pink);
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #db2777; /* pink-600 */
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* --- Footer --- */
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .footer-card {
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            text-decoration: none;
+            display: block;
+        }
+
+        .bg-pink-gradient { background: linear-gradient(to right, #ec4899, #9333ea); }
+        .bg-green-gradient { background: linear-gradient(to right, #22c55e, #16a34a); }
+
+        .footer-icon {
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-icon {
+            color: #22c55e;
+            margin-bottom: 1rem;
+        }
+
+        .close-modal {
+            margin-top: 1.5rem;
+            background: #374151;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div>
+                <div class="brand">
+                    <i data-lucide="scissors" style="width: 32px; height: 32px;"></i>
+                    <h1>Studio de Beleza CR</h1>
+                </div>
+                <p>Agende seu horário de forma rápida e prática</p>
+            </div>
+            <div class="social-icons">
+                <a href="https://wa.me/5534997354857" target="_blank" class="icon-btn" title="WhatsApp">
+                    <i data-lucide="message-circle"></i>
+                </a>
+                <a href="https://www.instagram.com/studio_de_beleza_cr/" target="_blank" class="icon-btn" title="Instagram">
+                    <i data-lucide="instagram"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-line"><div class="progress-fill" id="progressFill"></div></div>
+            
+            <div class="step-indicator active" id="indicator1">
+                <div class="circle">1</div>
+                <span class="step-label">Serviço</span>
+            </div>
+            <div class="step-indicator" id="indicator2">
+                <div class="circle">2</div>
+                <span class="step-label">Data/Hora</span>
+            </div>
+            <div class="step-indicator" id="indicator3">
+                <div class="circle">3</div>
+                <span class="step-label">Dados</span>
+            </div>
+        </div>
+
+        <!-- STEP 1: Serviços -->
+        <div id="step1" class="step-content active">
+            <h2>Escolha o Serviço</h2>
+            <div class="grid-2" id="servicesGrid">
+                <!-- Services injected by JS -->
+            </div>
+            <button class="btn btn-primary" id="btnStep1" style="width: 100%; margin-top: 2rem;" disabled onclick="goToStep(2)">
+                Continuar
+            </button>
+        </div>
+
+        <!-- STEP 2: Data e Hora -->
+        <div id="step2" class="step-content">
+            <h2>Escolha Data e Horário</h2>
+            
+            <h3>
+                <i data-lucide="calendar" style="width:20px;"></i> Selecione o Dia
+            </h3>
+            <div class="grid-4 grid-7" id="datesGrid" style="margin-bottom: 1.5rem;">
+                <!-- Dates injected by JS -->
+            </div>
+
+            <div id="timeSection" style="display: none;">
+                <h3>
+                    <i data-lucide="clock" style="width:20px;"></i> Selecione o Horário
+                </h3>
+                <div class="grid-6 grid-4" id="timesGrid">
+                    <!-- Times injected by JS -->
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="goToStep(1)">Voltar</button>
+                <button class="btn btn-primary" id="btnStep2" disabled onclick="goToStep(3)">Continuar</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Dados -->
+        <div id="step3" class="step-content">
+            <h2>Seus Dados</h2>
+            
+            <div class="form-box">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="user" style="width:16px; display:inline;"></i> Nome Completo
+                    </label>
+                    <input type="text" class="form-input" id="clientName" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <i data-lucide="phone" style="width:16px; display:inline;"></i> Telefone/WhatsApp
+                    </label>
+                    <input type="tel" class="form-input" id="clientPhone" placeholder="(00) 00000-0000">
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <h3 style="margin-bottom: 1rem;">
+                    <i data-lucide="check" style="width:20px; color: var(--primary-purple);"></i> Resumo do Agendamento
+                </h3>
+                <div id="summaryDetails">
+                    <!-- Summary injected by JS -->
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-secondary" onclick="goToStep(2)">Voltar</button>
+                <button class="btn btn-primary" id="btnStep3" disabled onclick="handleConfirm()">Confirmar Agendamento</button>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-grid">
+            <a href="https://www.instagram.com/studio_de_beleza_cr/" target="_blank" class="footer-card bg-pink-gradient">
+                <i data-lucide="instagram" class="footer-icon"></i>
+                <h3>Siga no Instagram</h3>
+                <p style="color: #fce7f3; margin-bottom: 1rem;">Veja nossos trabalhos e novidades!</p>
+                <span style="background: white; color: var(--primary-pink); padding: 0.5rem 1rem; border-radius: 99px; font-weight: 700;">@studio_de_beleza_cr</span>
+            </a>
+            
+            <a href="https://wa.me/5534997354857" target="_blank" class="footer-card bg-green-gradient">
+                <i data-lucide="message-circle" class="footer-icon"></i>
+                <h3>Fale Conosco</h3>
+                <p style="color: #dcfce7; margin-bottom: 1rem;">Tire suas dúvidas pelo WhatsApp!</p>
+                <span style="background: white; color: #16a34a; padding: 0.5rem 1rem; border-radius: 99px; font-weight: 700;">(34) 9 9735-4857</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content">
+            <i data-lucide="check-circle" class="modal-icon" style="width: 64px; height: 64px;"></i>
+            <h2 style="margin-bottom: 0.5rem;">Agendamento Confirmado!</h2>
+            <p style="color: var(--text-gray); margin-bottom: 1rem;">Entraremos em contato para confirmar.</p>
+            <div style="text-align: left; background: #f3f4f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;" id="modalSummary">
+                <!-- Details -->
+            </div>
+            <button class="btn close-modal" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DADOS ---
+        const services = [
+            { id: 1, name: 'Corte Feminino', duration: '45 min', price: 'R$ 60,00' },
+            { id: 2, name: 'Escova', duration: '30 min', price: 'R$ 40,00' },
+            { id: 3, name: 'Progressiva', duration: '3-4 horas', price: 'R$ 250,00' },
+            { id: 4, name: 'Hidratação', duration: '1 hora', price: 'R$ 80,00' },
+            { id: 5, name: 'Coloração', duration: '2 horas', price: 'R$ 150,00' },
+            { id: 6, name: 'Luzes/Mechas', duration: '3 horas', price: 'R$ 200,00' },
+            { id: 7, name: 'Penteado', duration: '1 hora', price: 'R$ 100,00' },
+            { id: 8, name: 'Manicure', duration: '45 min', price: 'R$ 35,00' },
+        ];
+
+        const horarios = [
+            '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+            '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
+            '16:00', '16:30', '17:00', '17:30', '18:00'
+        ];
+
+        // --- ESTADO ---
+        let state = {
+            step: 1,
+            selectedService: null,
+            selectedDate: null,
+            selectedTime: null,
+            clientName: '',
+            clientPhone: ''
+        };
+
+        // --- INICIALIZAÇÃO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderServices();
+            renderDates();
+            setupInputs();
+        });
+
+        // --- RENDERIZAÇÃO ---
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = services.map(s => `
+                <div class="card-selectable ${state.selectedService === s.id ? 'selected' : ''}" 
+                     onclick="selectService(${s.id})">
+                    <div class="service-info">
+                        <div>
+                            <h3 style="margin-bottom:0.25rem; font-size:1.125rem;">${s.name}</h3>
+                            <span class="duration-badge">
+                                <i data-lucide="clock" style="width:14px; height:14px; display:inline; margin-right:4px;"></i>
+                                ${s.duration}
+                            </span>
+                        </div>
+                        <div class="service-price">${s.price}</div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+            checkStep1Validity();
+        }
+
+        function renderDates() {
+            const grid = document.getElementById('datesGrid');
+            const days = getNextDays();
+            grid.innerHTML = days.map(date => {
+                const formatted = formatDate(date);
+                return `
+                <div class="card-selectable date-card ${state.selectedDate === formatted.full ? 'selected' : ''}" 
+                     onclick="selectDate('${formatted.full}')">
+                    <div class="weekday">${formatted.weekday}</div>
+                    <div class="day">${formatted.day}</div>
+                    <div class="month">${formatted.month.toString().padStart(2, '0')}</div>
+                </div>
+            `}).join('');
+            checkStep2Validity();
+        }
+
+        function renderTimes() {
+            const grid = document.getElementById('timesGrid');
+            grid.innerHTML = horarios.map(t => `
+                <div class="card-selectable time-card ${state.selectedTime === t ? 'selected' : ''}" 
+                     onclick="selectTime('${t}')">
+                    ${t}
+                </div>
+            `).join('');
+        }
+
+        function renderSummary() {
+            const service = services.find(s => s.id === state.selectedService);
+            const html = `
+                <p><strong>Serviço:</strong> ${service.name}</p>
+                <p><strong>Valor:</strong> ${service.price}</p>
+                <p><strong>Duração:</strong> ${service.duration}</p>
+                <p><strong>Data:</strong> ${formatDateBr(state.selectedDate)}</p>
+                <p><strong>Horário:</strong> ${state.selectedTime}</p>
+            `;
+            document.getElementById('summaryDetails').innerHTML = html;
+            document.getElementById('modalSummary').innerHTML = html;
+        }
+
+        // --- LÓGICA DE SELEÇÃO ---
+        function selectService(id) {
+            state.selectedService = id;
+            renderServices();
+        }
+
+        function selectDate(fullDate) {
+            state.selectedDate = fullDate;
+            state.selectedTime = null; // Reset time if date changes
+            document.getElementById('timeSection').style.display = 'block';
+            renderDates();
+            renderTimes();
+            checkStep2Validity();
+        }
+
+        function selectTime(time) {
+            state.selectedTime = time;
+            renderTimes();
+            checkStep2Validity();
+        }
+
+        // --- NAVEGAÇÃO ---
+        function goToStep(stepNumber) {
+            // Atualiza estado interno
+            state.step = stepNumber;
+            
+            // Atualiza UI dos passos (Esconder/Mostrar)
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+
+            // Atualiza barra de progresso
+            const indicators = [1, 2, 3];
+            indicators.forEach(i => {
+                const el = document.getElementById(`indicator${i}`);
+                if (i <= stepNumber) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+
+            // Atualiza linha de progresso
+            const fill = document.getElementById('progressFill');
+            if (stepNumber === 1) fill.style.width = '0%';
+            if (stepNumber === 2) fill.style.width = '50%';
+            if (stepNumber === 3) fill.style.width = '100%';
+
+            // Se foi para o passo 3, renderiza o resumo
+            if (stepNumber === 3) {
+                renderSummary();
+                checkStep3Validity();
+            }
+            
+            window.scrollTo(0, 0);
+        }
+
+        function checkStep1Validity() {
+            const btn = document.getElementById('btnStep1');
+            btn.disabled = !state.selectedService;
+        }
+
+        function checkStep2Validity() {
+            const btn = document.getElementById('btnStep2');
+            btn.disabled = !(state.selectedDate && state.selectedTime);
+        }
+
+        function setupInputs() {
+            const nameInput = document.getElementById('clientName');
+            const phoneInput = document.getElementById('clientPhone');
+            
+            const check = () => {
+                state.clientName = nameInput.value;
+                state.clientPhone = phoneInput.value;
+                checkStep3Validity();
+            };
+
+            nameInput.addEventListener('input', check);
+            phoneInput.addEventListener('input', check);
+        }
+
+        function checkStep3Validity() {
+            const btn = document.getElementById('btnStep3');
+            const isValid = state.clientName.trim() !== '' && state.clientPhone.trim() !== '';
+            btn.disabled = !isValid;
+        }
+
+        // --- CONFIRMAÇÃO E MODAL ---
+        function handleConfirm() {
+            // Mostrar Modal Customizado
+            document.getElementById('confirmModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('open');
+            // Resetar tudo
+            state = {
+                step: 1,
+                selectedService: null,
+                selectedDate: null,
+                selectedTime: null,
+                clientName: '',
+                clientPhone: ''
+            };
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('timeSection').style.display = 'none';
+            
+            goToStep(1);
+            renderServices();
+            renderDates();
+        }
+
+        // --- UTILITÁRIOS ---
+        function getNextDays() {
+            const days = [];
+            const today = new Date();
+            for (let i = 1; i <= 7; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                days.push(date);
+            }
+            return days;
+        }
+
+        function formatDate(date) {
+            const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            return {
+                weekday: weekdays[date.getDay()],
+                day: date.getDate(),
+                month: date.getMonth() + 1,
+                full: date.toISOString().split('T')[0]
+            };
+        }
+
+        function formatDateBr(isoDate) {
+            if(!isoDate) return '';
+            const [year, month, day] = isoDate.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+    </script>
+</body>
+</html>
