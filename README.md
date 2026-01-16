@@ -12,7 +12,7 @@ Este projeto foi desenvolvido para proporcionar uma experiência de agendamento 
 
 ## 🌐 Demonstração
 O projeto está publicado e pode ser acessado aqui:
-**[Link para o Site no Netlify](SUA_URL_AQUI_DO_NETLIFY)**
+**[Link para o Site no Netlify](https://studio-beleza-crl.netlify.app/O_NETLIFY)**
 
 ## ✨ Funcionalidades
 - [x] Interface Responsiva (Mobile e Desktop)
