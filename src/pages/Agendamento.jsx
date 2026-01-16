@@ -19,22 +19,24 @@ export default function Agendamento() {
   const [selectedTime, setSelectedTime] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [customServiceText, setCustomServiceText] = useState("");
 
   const services = [
-    { id: 1, name: "Corte Feminino", duration: "1 hora", price: "R$ 60,00", icon: "✂️" },
-    { id: 2, name: "Progressiva", duration: "2 a 3 horas", price: "R$ 250,00", icon: "💆‍♀️" },
-    { id: 3, name: "Botox", duration: "2 a 3 horas", price: "R$ 200,00", icon: "✨" },
-    { id: 4, name: "Make Média", duration: "1h30", price: "R$ 120,00", icon: "💄" },
-    { id: 5, name: "Luzes/Mechas", duration: "1 a 2 horas", price: "R$ 180,00", icon: "🌟" },
-    { id: 6, name: "Escova", duration: "30 min", price: "R$ 40,00", icon: "💨" },
-    { id: 7, name: "Hidratação", duration: "1 hora", price: "R$ 80,00", icon: "💧" },
-    { id: 8, name: "Coloração", duration: "1h30 a 2h", price: "R$ 150,00", icon: "🎨" },
-    { id: 9, name: "Ombré Hair", duration: "2 a 3 horas", price: "R$ 220,00", icon: "🌈" },
-    { id: 10, name: "Reflexo", duration: "1 hora", price: "R$ 100,00", icon: "✨" },
-    { id: 11, name: "Cauterização", duration: "1h30", price: "R$ 120,00", icon: "🔥" },
-    { id: 12, name: "Penteado", duration: "1 hora", price: "R$ 100,00", icon: "👑" },
-    { id: 13, name: "Sobrancelha (Design)", duration: "30 min", price: "R$ 30,00", icon: "👁️" },
-    { id: 14, name: "Manicure + Pedicure", duration: "1 hora", price: "R$ 50,00", icon: "💅" },
+    { id: 1, name: "Escova ou Chapa", duration: "30 min", price: "R$ 25,00", icon: "💨" },
+    { id: 2, name: "Corte Simples + Escova", duration: "1 hora", price: "R$ 50,00", icon: "✂️" },
+    { id: 3, name: "Hidratação/Nutrição", duration: "1 hora", price: "R$ 60,00", icon: "💧" },
+    { id: 4, name: "Coloração + Escova", duration: "1h30 a 2h", price: "R$ 55,00", icon: "🎨" },
+    { id: 5, name: "Aplicação Coloração Cliente", duration: "1 hora", price: "R$ 30,00", icon: "🖌️" },
+    { id: 6, name: "Progressiva", duration: "3 a 4 horas", price: "R$ 150,00", icon: "💆‍♀️" },
+    { id: 7, name: "Progressiva Cabelo Longo", duration: "4 a 5 horas", price: "R$ 180,00", icon: "💆‍♀️" },
+    { id: 8, name: "Botox Capilar", duration: "2 a 3 horas", price: "R$ 80,00", icon: "✨" },
+    { id: 9, name: "Cauterização + Escova", duration: "1h30", price: "R$ 70,00", icon: "🔥" },
+    { id: 10, name: "Selagem", duration: "1h30", price: "R$ 80,00", icon: "🌟" },
+    { id: 11, name: "Manicure", duration: "45 min", price: "R$ 30,00", icon: "💅" },
+    { id: 12, name: "Pedicure", duration: "45 min", price: "R$ 30,00", icon: "🦶" },
+    { id: 13, name: "Banho em Gel", duration: "1 hora", price: "R$ 50,00", icon: "✨" },
+    { id: 14, name: "Maquiagem", duration: "1 hora", price: "R$ 75,00", icon: "💄" },
+    { id: 15, name: "Outros Serviços", duration: null, price: null, icon: "📝", custom: true },
   ];
 
   const horarios = [
@@ -70,16 +72,18 @@ export default function Agendamento() {
     const service = services.find((s) => s.id === id);
     if (!service) return;
 
-    Swal.fire({
-      toast: true,
-      position: "top-end",
-      icon: "success",
-      title: `${service.icon} ${service.name}`,
-      text: `${service.price} • ${service.duration}`,
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-    });
+    if (!service.custom) {
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: `${service.icon} ${service.name}`,
+        text: `${service.price} • ${service.duration}`,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
+    }
   };
 
   const handleConfirm = () => {
@@ -89,6 +93,13 @@ export default function Agendamento() {
     const dateObj = new Date(selectedDate + 'T00:00:00');
     const dateFormatted = formatDate(dateObj);
 
+    let serviceDetails = service.custom 
+      ? `<p style="margin: 10px 0;"><strong>📝 Descrição:</strong> ${customServiceText}</p>`
+      : `
+        <p style="margin: 10px 0;"><strong>💰 Valor:</strong> ${service.price}</p>
+        <p style="margin: 10px 0;"><strong>⏱️ Duração:</strong> ${service.duration}</p>
+      `;
+
     Swal.fire({
       icon: "success",
       title: "🎉 Agendamento Confirmado!",
@@ -97,8 +108,7 @@ export default function Agendamento() {
           <p style="margin: 10px 0;"><strong>👤 Cliente:</strong> ${clientName}</p>
           <p style="margin: 10px 0;"><strong>📱 Telefone:</strong> ${clientPhone}</p>
           <p style="margin: 10px 0;"><strong>${service.icon} Serviço:</strong> ${service.name}</p>
-          <p style="margin: 10px 0;"><strong>💰 Valor:</strong> ${service.price}</p>
-          <p style="margin: 10px 0;"><strong>⏱️ Duração:</strong> ${service.duration}</p>
+          ${serviceDetails}
           <p style="margin: 10px 0;"><strong>📅 Data:</strong> ${dateFormatted.formatted}</p>
           <p style="margin: 10px 0;"><strong>🕐 Horário:</strong> ${selectedTime}</p>
         </div>
@@ -117,6 +127,7 @@ export default function Agendamento() {
     setSelectedTime("");
     setClientName("");
     setClientPhone("");
+    setCustomServiceText("");
   };
 
   return (
@@ -133,6 +144,7 @@ export default function Agendamento() {
               setSelectedTime("");
               setClientName("");
               setClientPhone("");
+              setCustomServiceText("");
             }}
             className="flex items-center gap-3 hover:opacity-90 transition-opacity"
           >
@@ -213,20 +225,43 @@ export default function Agendamento() {
                       <span className="text-3xl">{s.icon}</span>
                       <div>
                         <h3 className="font-bold text-lg text-gray-800">{s.name}</h3>
-                        <p className="text-sm text-gray-600">
-                          <Clock className="w-4 h-4 inline mr-1" />
-                          {s.duration}
-                        </p>
+                        {s.duration && (
+                          <p className="text-sm text-gray-600">
+                            <Clock className="w-4 h-4 inline mr-1" />
+                            {s.duration}
+                          </p>
+                        )}
+                        {s.custom && (
+                          <p className="text-sm text-gray-500 italic">Descreva o que deseja</p>
+                        )}
                       </div>
                     </div>
-                    <span className="text-pink-600 font-bold text-lg">{s.price}</span>
+                    <span className="text-pink-600 font-bold text-lg">
+                      {s.price || "A combinar"}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
 
+            {/* Campo de descrição para "Outros Serviços" */}
+            {services.find(s => s.id === selectedService)?.custom && (
+              <div className="mt-6 bg-white rounded-xl p-6 shadow-md">
+                <label className="block text-gray-700 font-semibold mb-2">
+                  📝 Descreva o serviço desejado
+                </label>
+                <textarea
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none"
+                  placeholder="Ex: luzes + corte, penteado para festa, design de sobrancelha..."
+                  rows={4}
+                  value={customServiceText}
+                  onChange={(e) => setCustomServiceText(e.target.value)}
+                />
+              </div>
+            )}
+
             <button
-              disabled={!selectedService}
+              disabled={!selectedService || (services.find(s => s.id === selectedService)?.custom && !customServiceText.trim())}
               onClick={() => setStep(2)}
               className="mt-8 w-full bg-pink-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-pink-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg"
             >
@@ -352,8 +387,14 @@ export default function Agendamento() {
               </h3>
               <div className="space-y-2 text-gray-700">
                 <p><strong>Serviço:</strong> {services.find(s => s.id === selectedService)?.name}</p>
-                <p><strong>Valor:</strong> {services.find(s => s.id === selectedService)?.price}</p>
-                <p><strong>Duração:</strong> {services.find(s => s.id === selectedService)?.duration}</p>
+                {services.find(s => s.id === selectedService)?.custom ? (
+                  <p><strong>Descrição:</strong> {customServiceText}</p>
+                ) : (
+                  <>
+                    <p><strong>Valor:</strong> {services.find(s => s.id === selectedService)?.price}</p>
+                    <p><strong>Duração:</strong> {services.find(s => s.id === selectedService)?.duration}</p>
+                  </>
+                )}
                 <p><strong>Data:</strong> {selectedDate && formatDate(new Date(selectedDate + 'T00:00:00')).formatted}</p>
                 <p><strong>Horário:</strong> {selectedTime}</p>
               </div>
@@ -413,4 +454,3 @@ export default function Agendamento() {
     </div>
   );
 }
-
